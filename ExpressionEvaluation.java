@@ -18,22 +18,37 @@ class ExpressionEvaluation{
 
     //Evaluation of postfix erxpression
     static String evaluate(String str){
-        Stack<Integer> stack = new Stack<>();
+        Stack<Double> stack = new Stack<>();
 
         for(int i=0;i<str.length();i++){
             if(str.charAt(i)==' ')
                 continue;
-            else if(str.charAt(i)>='0' && str.charAt(i)<='9'){
-                int n=0;
+            else if((str.charAt(i)>='0' && str.charAt(i)<='9') || str.charAt(i)=='.'){
+                String n="";
                 while(i<str.length() && str.charAt(i)>='0' && str.charAt(i)<='9'){
-                    n=n*10+(str.charAt(i)-'0');
+                    n=n+Character.toString(str.charAt(i));
                     i++;
                 }
-                
-                stack.push(n);
+                String dc="";
+                if(i<str.length() && str.charAt(i)=='.'){
+                    i++;
+                    while(i<str.length() && str.charAt(i)>='0' && str.charAt(i)<='9'){
+                        dc=dc+Character.toString(str.charAt(i));
+                        i++;
+                    }
+                    
+                }
+                if(dc.length()>0){
+                    n=n+dc;
+                }
+                double num=Double.parseDouble(n);
+                double number = num/(dc.length()>0?(dc.length())*10:1);
+                System.out.println("NUM: "+num);
+                System.out.println("Pushed: "+number);
+                stack.push(number);
             }else{
-                int op1 = stack.pop();
-                int op2 = stack.pop();
+                double op1 = stack.pop();
+                double op2 = stack.pop();
                 stack.push(calculate(op2,op1,str.charAt(i)));
             }
         }
@@ -41,13 +56,13 @@ class ExpressionEvaluation{
         return stack.pop().toString();
     } 
 
-    static int calculate(int op2,int op1, char o){
+    static double calculate(double op2,double op1, char o){
         switch(o){
             case '+': return op1+op2;
             case '-': return op2-op1;
             case '*': return op1*op2;
             case '/': return op2/op1;
-            case '^': return (int)Math.pow(op2,op1);
+            case '^': return Math.pow(op2,op1);
         }
         return 0;
     }
@@ -79,9 +94,22 @@ class ExpressionEvaluation{
             }else{
                 str = str +" "+ Character.toString(ar[i]);
                 i++;
-                while(i<st.length() && ar[i]>='0' && ar[i]<='9'){
-                    str = str + Character.toString(ar[i]);
+                String dc="";
+                while(i<st.length() && (ar[i]>='0' && ar[i]<='9')){
+                        str = str + Character.toString(ar[i]);
+                        i++;
+                    }
+
+                if(i<st.length() && ar[i]=='.'){
                     i++;
+                        while(i<st.length() && ar[i]>='0' && ar[i]<='9'){
+                            dc = dc + Character.toString(ar[i]);
+                            i++;
+                        }
+
+                    if(dc.length()>0){
+                        str=str+"."+dc;
+                    }    
                 }
                 i--;
             }
